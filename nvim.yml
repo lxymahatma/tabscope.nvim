@@ -1,0 +1,10 @@
+base: lua51
+lua_versions:
+  - luajit
+
+name: nvim
+globals:
+  vim:
+    any: true
+  Snacks:
+    any: true
