@@ -5,6 +5,8 @@ local storage = require("tabscope.storage")
 
 local buffer_cache = {}
 
+local is_switching_tab = false
+
 local function add_buffer_by_id(bufnr)
     if not utils.is_valid_buf(bufnr) then return end
 
@@ -22,6 +24,7 @@ end
 function M.add_buffer(args) add_buffer_by_id(args.buf) end
 
 function M.remove_buffer(args)
+    if is_switching_tab then return end
     local bufnr = args.buf
     for _, list in pairs(buffer_cache) do
         for i = #list, 1, -1 do
@@ -43,15 +46,18 @@ function M.on_tab_enter(args)
     local allowed_bufs = utils.to_set(cached_bufs)
     local all_bufs = vim.api.nvim_list_bufs()
 
+    -- Unlist buffer in tab enter not tab leave to prevent buffers exists in both tabs and unlist buffer for a while
     for _, bufnr in ipairs(all_bufs) do
         if vim.api.nvim_buf_is_valid(bufnr) then
             local should_show = allowed_bufs[bufnr] or false
             vim.api.nvim_set_option_value("buflisted", should_show, { buf = bufnr })
         end
     end
+
+    vim.schedule(function() is_switching_tab = false end)
 end
 
-function M.on_tab_leave(args) end
+function M.on_tab_leave(args) is_switching_tab = true end
 
 function M.on_tab_closed(args)
     local closed_handle = tonumber(args.file)

@@ -7,7 +7,7 @@ local function setup_autocmds()
     local group = vim.api.nvim_create_augroup("tabscope", { clear = true })
 
     vim.api.nvim_create_autocmd("BufEnter", { group = group, callback = core.add_buffer })
-    vim.api.nvim_create_autocmd("BufDelete", { group = group, callback = core.remove_buffer })
+    vim.api.nvim_create_autocmd({ "BufDelete", "BufWipeout" }, { group = group, callback = core.remove_buffer })
 
     vim.api.nvim_create_autocmd("TabEnter", { group = group, callback = core.on_tab_enter })
     vim.api.nvim_create_autocmd("TabLeave", { group = group, callback = core.on_tab_leave })
