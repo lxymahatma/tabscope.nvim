@@ -11,7 +11,9 @@
     opts = {
         dir = vim.fn.stdpath("state") .. "/tabscopes/",
         branch = true,
-        persistence = false,
+        integrations = {
+            persistence = false,
+        }
     }
 }
 ```

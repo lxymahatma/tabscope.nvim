@@ -1,15 +1,12 @@
 local M = {}
 
----@class Tabscope.Config
----@field dir string
----@field branch boolean
----@field persistence boolean
-
 ---@type Tabscope.Config
 M.options = {
     dir = vim.fn.stdpath("state") .. "/tabscopes/",
     branch = true,
-    persistence = false,
+    integrations = {
+        persistence = false,
+    },
 }
 
 ---@param opts Tabscope.Config?
