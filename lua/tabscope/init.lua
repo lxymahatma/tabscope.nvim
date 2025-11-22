@@ -14,9 +14,6 @@ local function setup_autocmds()
     vim.api.nvim_create_autocmd("TabClosed", { group = group, callback = core.on_tab_closed })
     vim.api.nvim_create_autocmd("TabNewEntered", { group = group, callback = core.on_tab_new_entered })
 
-    vim.api.nvim_create_user_command("TabScopeSave", function() core.save() end, {})
-    vim.api.nvim_create_user_command("TabScopeLoad", function() core.load() end, {})
-
     if config.options.integrations.persistence then
         vim.api.nvim_create_autocmd("User", {
             group = group,
@@ -31,9 +28,15 @@ local function setup_autocmds()
     end
 end
 
+local function create_user_commands()
+    vim.api.nvim_create_user_command("TabScopeSave", core.save, {})
+    vim.api.nvim_create_user_command("TabScopeLoad", core.load, {})
+end
+
 function M.setup(opts)
     config.setup(opts)
     setup_autocmds()
+    create_user_commands()
 end
 
 return setmetatable(M, {
