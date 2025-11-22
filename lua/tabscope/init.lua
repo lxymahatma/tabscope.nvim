@@ -14,7 +14,10 @@ local function setup_autocmds()
     vim.api.nvim_create_autocmd("TabClosed", { group = group, callback = core.on_tab_closed })
     vim.api.nvim_create_autocmd("TabNewEntered", { group = group, callback = core.on_tab_new_entered })
 
-    if config.options.persistence then
+    vim.api.nvim_create_user_command("TabScopeSave", function() core.save() end, {})
+    vim.api.nvim_create_user_command("TabScopeLoad", function() core.load() end, {})
+
+    if config.options.integrations.persistence then
         vim.api.nvim_create_autocmd("User", {
             group = group,
             pattern = "PersistenceSavePost",
