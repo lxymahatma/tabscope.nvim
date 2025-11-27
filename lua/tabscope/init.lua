@@ -6,7 +6,7 @@ local core = require("tabscope.core")
 local function setup_autocmds()
     local group = vim.api.nvim_create_augroup("tabscope", { clear = true })
 
-    vim.api.nvim_create_autocmd("BufEnter", { group = group, callback = core.add_buffer })
+    vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter" }, { group = group, callback = core.add_buffer })
     vim.api.nvim_create_autocmd({ "BufDelete", "BufWipeout" }, { group = group, callback = core.remove_buffer })
 
     vim.api.nvim_create_autocmd("TabEnter", { group = group, callback = core.on_tab_enter })
@@ -35,6 +35,7 @@ end
 
 function M.setup(opts)
     config.setup(opts)
+    core.on_startup()
     setup_autocmds()
     create_user_commands()
 end

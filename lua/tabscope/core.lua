@@ -21,6 +21,13 @@ local function add_buffer_by_id(bufnr)
     table.insert(buffer_cache[current_handle], bufnr)
 end
 
+function M.on_startup()
+    local current_bufs = vim.api.nvim_list_bufs()
+    for _, bufnr in ipairs(current_bufs) do
+        if utils.is_valid_buf(bufnr) then add_buffer_by_id(bufnr) end
+    end
+end
+
 function M.add_buffer(args) add_buffer_by_id(args.buf) end
 
 function M.remove_buffer(args)
