@@ -7,7 +7,7 @@ local buffer_cache = {}
 
 local is_switching_tab = false
 
-local function add_buffer_by_id(bufnr)
+function M.add_buffer_by_id(bufnr)
     if not utils.is_valid_buf(bufnr) then return end
 
     vim.api.nvim_set_option_value("buflisted", true, { buf = bufnr })
@@ -21,7 +21,7 @@ local function add_buffer_by_id(bufnr)
     table.insert(buffer_cache[current_handle], bufnr)
 end
 
-function M.add_buffer(args) add_buffer_by_id(args.buf) end
+function M.add_buffer(args) M.add_buffer_by_id(args.buf) end
 
 function M.remove_buffer(args)
     if is_switching_tab then return end
@@ -38,7 +38,7 @@ function M.on_tab_enter(args)
 
     if not buffer_cache[current_handle] then
         local current_buf = vim.api.nvim_get_current_buf()
-        add_buffer_by_id(current_buf)
+        M.add_buffer_by_id(current_buf)
     end
 
     local cached_bufs = buffer_cache[current_handle] or {}
