@@ -7,7 +7,7 @@ local function get_path()
     local name = vim.fn.getcwd():gsub("[\\/:]+", "%%")
     if config.options.branch then
         local branch = utils.get_git_branch()
-        if branch and branch ~= "" then name = name .. "%%" .. branch end
+        if branch and branch ~= "main" and branch ~= "master" then name = name .. "%%" .. branch:gsub("[\\/:]+", "%%") end
     end
     return config.options.dir .. name
 end
