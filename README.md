@@ -5,11 +5,13 @@ Provides an independent buffer scope for each tab in Neovim.
 [![Lua](https://img.shields.io/badge/Lua-blue?logo=lua&logoColor=white)](https://www.lua.org)
 [![Neovim](https://img.shields.io/badge/Neovim-0.8+-green?logo=neovim&logoColor=white)](https://neovim.io)
 
-The core idea of `tabscope.nvim` is to maintain a separate list of buffers for each tab. When you switch between tabs, the buffer list in your bufferline can dynamically update to show only the buffers relevant to the current tab.
+The core idea of `tabscope.nvim` is to maintain a separate list of buffers for each tab.
+When you switch between tabs, the buffer list in your bufferline can dynamically update to show only the buffers relevant to the current tab.
 
 ## Core Concept
 
-This plugin is primarily designed for users of [heirline.nvim](https://github.com/rebelot/heirline.nvim) to enable a tab-specific buffer list component. While `tabscope.nvim` can run standalone, it better integrates with `heirline.nvim`.
+This plugin is primarily designed for users of [heirline.nvim](https://github.com/rebelot/heirline.nvim) to enable a tab-specific buffer list component.
+While `tabscope.nvim` can run standalone, it better integrates with `heirline.nvim`.
 
 ## ✨ Features
 
@@ -58,7 +60,8 @@ The plugin comes with a set of default options.
 
 ### Heirline Integration
 
-The primary use case for `tabscope.nvim` is to provide a per-tab buffer list in your `heirline` configuration. This is achieved by passing the `get_buflist` function to `heirline`'s `utils.make_buflist` helper.
+The primary use case for `tabscope.nvim` is to provide a per-tab buffer list in your `heirline` configuration.
+This is achieved by passing the `get_buflist` function to `heirline`'s `utils.make_buflist` helper.
 
 Below is an example of a `heirline` bufferline configuration that uses `tabscope` to create a dynamic buffer line.
 
@@ -74,7 +77,8 @@ local BufferLine = utils.make_buflist(
 )
 ```
 
-In `utils.make_buflist`, pass `function() return require("tabscope").get_buflist() end, false` as the fourth and fifth argument. This tells `heirline` to use `tabscope` as the data source for the buffer list.
+In `utils.make_buflist`, pass `function() return require("tabscope").get_buflist() end, false` as the fourth and fifth argument.
+This tells `heirline` to use `tabscope` as the data source for the buffer list.
 
 ## 📚 API & Commands
 
