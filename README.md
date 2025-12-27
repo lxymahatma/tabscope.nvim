@@ -86,6 +86,23 @@ This tells `heirline` to use `tabscope` as the data source for the buffer list.
 
 - `:TabScopeSave` - Manually saves the state of all tabs to persistent storage path set in options.
 - `:TabScopeLoad` - Manually loads the state of all tabs from persistent storage path set in options.
+- `:TabScopeNext` - Navigate to the next buffer in tab-scoped order (alternative to `:bnext`).
+- `:TabScopePrev` - Navigate to the previous buffer in tab-scoped order (alternative to `:bprevious`).
+- `:TabScopeCloseLeft` - Close all buffers to the left of the current buffer in the current tab.
+- `:TabScopeCloseRight` - Close all buffers to the right of the current buffer in the current tab.
+
+> [!NOTE]
+> The native `:bnext` and `:bprevious` commands navigate buffers by their internal buffer numbers, which may differ from the visual order in your bufferline.
+> Use `:TabScopeNext` and `:TabScopePrev` for navigation that respects the tab-scoped buffer order.
+
+### Some Keymaps Examples
+
+```lua
+vim.keymap.set("n", "<Tab>", "<Cmd>TabScopeNext<CR>", { desc = "Next buffer in tab" })
+vim.keymap.set("n", "<S-Tab>", "<Cmd>TabScopePrev<CR>", { desc = "Previous buffer in tab" })
+vim.keymap.set("n", "<leader>bl", "<Cmd>TabScopeCloseLeft<CR>", { desc = "Close buffers to the left" })
+vim.keymap.set("n", "<leader>br", "<Cmd>TabScopeCloseRight<CR>", { desc = "Close buffers to the right" })
+```
 
 ### Lua API
 
@@ -96,6 +113,14 @@ local tabscope = require("tabscope")
 
 -- Get the list of buffers associated with the current tab
 local buflist = tabscope.get_buflist()
+
+-- Navigate to next/previous buffer in tab-scoped order
+tabscope.next_buffer()
+tabscope.prev_buffer()
+
+-- Close buffers to the left or right
+tabscope.close_buffers("left")
+tabscope.close_buffers("right")
 
 -- Manually save the current tab-buffer mapping to persistent storage
 tabscope.save()

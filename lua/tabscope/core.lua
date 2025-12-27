@@ -132,4 +132,83 @@ function M.get_buflist()
     return vim.list_slice(buffers)
 end
 
+function M.next_buffer()
+    local current_handle = utils.get_current_tabhandle()
+    local buffers = buffer_cache[current_handle] or {}
+
+    if #buffers <= 1 then return end
+
+    local current_buf = vim.api.nvim_get_current_buf()
+    local current_idx = nil
+
+    for i, bufnr in ipairs(buffers) do
+        if bufnr == current_buf then
+            current_idx = i
+            break
+        end
+    end
+
+    if not current_idx then return end
+
+    local next_idx = current_idx % #buffers + 1
+    vim.api.nvim_set_current_buf(buffers[next_idx])
+end
+
+function M.prev_buffer()
+    local current_handle = utils.get_current_tabhandle()
+    local buffers = buffer_cache[current_handle] or {}
+
+    if #buffers <= 1 then return end
+
+    local current_buf = vim.api.nvim_get_current_buf()
+    local current_idx = nil
+
+    for i, bufnr in ipairs(buffers) do
+        if bufnr == current_buf then
+            current_idx = i
+            break
+        end
+    end
+
+    if not current_idx then return end
+
+    local prev_idx = (current_idx - 2) % #buffers + 1
+    vim.api.nvim_set_current_buf(buffers[prev_idx])
+end
+
+---@param direction "left"|"right"
+function M.close_buffers(direction)
+    local current_handle = utils.get_current_tabhandle()
+    local buffers = buffer_cache[current_handle] or {}
+    local current_buf = vim.api.nvim_get_current_buf()
+    local current_idx = nil
+
+    for i, buf in ipairs(buffers) do
+        if buf == current_buf then
+            current_idx = i
+            break
+        end
+    end
+
+    if not current_idx then return end
+
+    local targets = {}
+
+    if direction == "left" then
+        for i = 1, current_idx - 1 do
+            table.insert(targets, buffers[i])
+        end
+    elseif direction == "right" then
+        for i = current_idx + 1, #buffers do
+            table.insert(targets, buffers[i])
+        end
+    end
+
+    if #targets == 0 then return end
+
+    for _, bufnr in ipairs(targets) do
+        if vim.api.nvim_buf_is_valid(bufnr) then vim.api.nvim_buf_delete(bufnr, { force = false }) end
+    end
+end
+
 return M

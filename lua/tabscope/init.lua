@@ -31,6 +31,10 @@ end
 local function create_user_commands()
     vim.api.nvim_create_user_command("TabScopeSave", core.save, {})
     vim.api.nvim_create_user_command("TabScopeLoad", core.load, {})
+    vim.api.nvim_create_user_command("TabScopeNext", core.next_buffer, {})
+    vim.api.nvim_create_user_command("TabScopePrev", core.prev_buffer, {})
+    vim.api.nvim_create_user_command("TabScopeCloseLeft", function() core.close_buffers("left") end, {})
+    vim.api.nvim_create_user_command("TabScopeCloseRight", function() core.close_buffers("right") end, {})
 end
 
 function M.setup(opts)
