@@ -1,7 +1,9 @@
-local M = {}
+local api = vim.api
 
 local utils = require("tabscope.utils")
 local storage = require("tabscope.storage")
+
+local M = {}
 
 local buffer_cache = {}
 
@@ -10,7 +12,7 @@ local is_switching_tab = false
 local function add_buffer_by_id(bufnr)
     if not utils.is_valid_buf(bufnr) then return end
 
-    vim.api.nvim_set_option_value("buflisted", true, { buf = bufnr })
+    api.nvim_set_option_value("buflisted", true, { buf = bufnr })
 
     local current_handle = utils.get_current_tabhandle()
     buffer_cache[current_handle] = buffer_cache[current_handle] or {}
@@ -22,7 +24,7 @@ local function add_buffer_by_id(bufnr)
 end
 
 function M.on_startup()
-    local current_bufs = vim.api.nvim_list_bufs()
+    local current_bufs = api.nvim_list_bufs()
     for _, bufnr in ipairs(current_bufs) do
         if utils.is_valid_buf(bufnr) then add_buffer_by_id(bufnr) end
     end
@@ -44,20 +46,20 @@ function M.on_tab_enter(args)
     local current_handle = utils.get_current_tabhandle()
 
     if not buffer_cache[current_handle] then
-        local current_buf = vim.api.nvim_get_current_buf()
+        local current_buf = api.nvim_get_current_buf()
         add_buffer_by_id(current_buf)
     end
 
     local cached_bufs = buffer_cache[current_handle] or {}
 
     local allowed_bufs = utils.to_set(cached_bufs)
-    local all_bufs = vim.api.nvim_list_bufs()
+    local all_bufs = api.nvim_list_bufs()
 
     -- Unlist buffer in tab enter not tab leave to prevent buffers exists in both tabs and unlist buffer for a while
     for _, bufnr in ipairs(all_bufs) do
-        if vim.api.nvim_buf_is_valid(bufnr) then
+        if api.nvim_buf_is_valid(bufnr) then
             local should_show = allowed_bufs[bufnr] or false
-            vim.api.nvim_set_option_value("buflisted", should_show, { buf = bufnr })
+            api.nvim_set_option_value("buflisted", should_show, { buf = bufnr })
         end
     end
 
@@ -77,15 +79,15 @@ function M.on_tab_new_entered(args) end
 ---@void
 function M.save()
     local data = {}
-    local tabs = vim.api.nvim_list_tabpages()
+    local tabs = api.nvim_list_tabpages()
 
     for _, handle in ipairs(tabs) do
         local paths = {}
         local buf_list = buffer_cache[handle] or {}
 
         for _, bufnr in ipairs(buf_list) do
-            if vim.api.nvim_buf_is_valid(bufnr) then
-                local name = vim.api.nvim_buf_get_name(bufnr)
+            if api.nvim_buf_is_valid(bufnr) then
+                local name = api.nvim_buf_get_name(bufnr)
                 if name and name ~= "" then table.insert(paths, name) end
             end
         end
@@ -105,7 +107,7 @@ function M.load()
 
     local data = storage.read()
     local current_handle = utils.get_current_tabhandle()
-    local tabs = vim.api.nvim_list_tabpages()
+    local tabs = api.nvim_list_tabpages()
 
     for i, paths in ipairs(data) do
         local handle = tabs[i]
@@ -117,7 +119,7 @@ function M.load()
                 if bufnr and bufnr > 0 then
                     table.insert(bufnr_list, bufnr)
                     local is_current = (handle == current_handle)
-                    vim.api.nvim_set_option_value("buflisted", is_current, { buf = bufnr })
+                    api.nvim_set_option_value("buflisted", is_current, { buf = bufnr })
                 end
             end
             buffer_cache[handle] = bufnr_list
@@ -138,7 +140,7 @@ function M.next_buffer()
 
     if #buffers <= 1 then return end
 
-    local current_buf = vim.api.nvim_get_current_buf()
+    local current_buf = api.nvim_get_current_buf()
     local current_idx = nil
 
     for i, bufnr in ipairs(buffers) do
@@ -151,7 +153,7 @@ function M.next_buffer()
     if not current_idx then return end
 
     local next_idx = current_idx % #buffers + 1
-    vim.api.nvim_set_current_buf(buffers[next_idx])
+    api.nvim_set_current_buf(buffers[next_idx])
 end
 
 function M.prev_buffer()
@@ -160,7 +162,7 @@ function M.prev_buffer()
 
     if #buffers <= 1 then return end
 
-    local current_buf = vim.api.nvim_get_current_buf()
+    local current_buf = api.nvim_get_current_buf()
     local current_idx = nil
 
     for i, bufnr in ipairs(buffers) do
@@ -173,14 +175,14 @@ function M.prev_buffer()
     if not current_idx then return end
 
     local prev_idx = (current_idx - 2) % #buffers + 1
-    vim.api.nvim_set_current_buf(buffers[prev_idx])
+    api.nvim_set_current_buf(buffers[prev_idx])
 end
 
 ---@param direction "left"|"right"
 function M.close_buffers(direction)
     local current_handle = utils.get_current_tabhandle()
     local buffers = buffer_cache[current_handle] or {}
-    local current_buf = vim.api.nvim_get_current_buf()
+    local current_buf = api.nvim_get_current_buf()
     local current_idx = nil
 
     for i, buf in ipairs(buffers) do
@@ -207,7 +209,7 @@ function M.close_buffers(direction)
     if #targets == 0 then return end
 
     for _, bufnr in ipairs(targets) do
-        if vim.api.nvim_buf_is_valid(bufnr) then vim.api.nvim_buf_delete(bufnr, { force = false }) end
+        if api.nvim_buf_is_valid(bufnr) then api.nvim_buf_delete(bufnr, { force = false }) end
     end
 end
 
